@@ -1,4 +1,5 @@
 import { Route, Redirect } from 'react-router-dom';
+import { useUser } from './useUser';
 
 /* export const PrivateRoute = ({ component: Component, ...rest }) => {
     const isAuthenticated = !!localStorage.getItem('token');
@@ -8,7 +9,7 @@ import { Route, Redirect } from 'react-router-dom';
 }; */
 
 export const PrivateRoute = props => {
-  const user = null;
+  const user = useUser();
 
   if (!user) {
     return <Redirect to="/login" />;
