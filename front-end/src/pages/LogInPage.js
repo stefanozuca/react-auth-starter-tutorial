@@ -1,16 +1,43 @@
-import {useState} from 'react'
-import {useHistory} from 'react-router-dom' 
-import {useToken} from '../auth/useToken'
+import { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom' 
+import { useToken } from '../auth/useToken'
 import axios from 'axios'
+import { useQueryParams } from '../util/useQueryParams'
 
 
 
 export const LogInPage = () => {
     const [token, setToken] = useToken();
+
     const [errorMessage, setErrorMessage] = useState('')
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    
+    const [googleOauthUrl, setGoogleOauthUrl] = useState('')
+    const { token: oauthToken } = useQueryParams();
+
     const history = useHistory()
+
+    useEffect(() => {
+        if (oauthToken) {
+            setToken(oauthToken);
+            history.push('/');
+        }
+    }, [oauthToken, history, setToken]);
+
+    useEffect(() => {
+        const fetchGoogleOauthUrl = async () => {
+            try {
+                const response = await axios.get('/auth/google/url');
+                setGoogleOauthUrl(response.data.url);
+            } 
+            catch (error) {
+                console.error('Error fetching Google OAuth URL:', error);
+            }
+        }
+        fetchGoogleOauthUrl();
+    }, []);
 
     const handleLogIn = async () => {
         const response = await axios.post('/api/login', {
@@ -52,6 +79,9 @@ export const LogInPage = () => {
             <button onClick={handleForgotPassword}>Forgot Password?</button>
 
             <button onClick={handleSignUp}>Sign Up</button>
+            <button 
+                disabled={!googleOauthUrl}
+                onClick={() => window.location.href = googleOauthUrl}>Log In With Google</button>
         </div>
     );
 };
