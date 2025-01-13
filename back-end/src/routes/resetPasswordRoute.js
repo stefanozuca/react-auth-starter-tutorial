@@ -19,12 +19,15 @@ export const resetPasswordRoute = {
             return res.sendStatus(404);
         }
 
-        const newPasswordHash = await bcrypt.hash(newPassword, 10);
+        const salt = uuid();
+        const pepper = process.env.PEPPER_STRING;
+        
+        const newPasswordHash = await bcrypt.hash(salt + newPassword + pepper, 10);
 
         await db.collection('users').updateOne(
             { _id: ObjectId(user._id) },
             {
-                $set: { passwordHash: newPasswordHash },
+                $set: { passwordHash: newPasswordHash, salt: salt },
                 $unset: { passwordResetCode: '' }
             }
         );

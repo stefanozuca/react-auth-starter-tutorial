@@ -15,9 +15,10 @@ export const logInRoute = {
             return res.status(401);
         
 
-        const { _id: id, isVerified, passwordHash, info } = user;
+        const { _id: id, isVerified, passwordHash, salt, info } = user;
+        const pepper = process.env.PEPPER_STRING;
         
-        const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
+        const isPasswordCorrect = await bcrypt.compare(salt + password + pepper, passwordHash);
 
         if (!isPasswordCorrect)
             return res.status(401).send('Invalid email or password');
