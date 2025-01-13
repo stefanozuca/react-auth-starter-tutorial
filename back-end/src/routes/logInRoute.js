@@ -34,7 +34,8 @@ export const logInRoute = {
         { expiresIn: '2d' },
         (err, token) => {
             if (err) {
-                res.status(500).send(err);
+                res.status(500).send({ message: 'Error generating token' });
+                console.log(err);
             } 
             res.status(200).send({ token });
         });

@@ -40,13 +40,18 @@ export const LogInPage = () => {
     }, []);
 
     const handleLogIn = async () => {
-        const response = await axios.post('/api/login', {
-            email,
-            password,
-        });
-        const {token} = response.data;
-        setToken(token);
-        history.push('/');
+        try {
+            const response = await axios.post('/api/login', {
+                email,
+                password,
+            });
+            const {token} = response.data;
+            setToken(token);
+            history.push('/');
+        }
+        catch (error) {
+            setErrorMessage(error.message);
+        }
     }
 
     const handleForgotPassword = () => history.push('/forgot-password')
